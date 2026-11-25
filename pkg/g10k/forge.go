@@ -461,12 +461,13 @@ func (rt *Runtime) downloadForgeModule(name string, version string, fm ForgeModu
 	if rt.CheckSum || fm.sha256sum != "" {
 		fm.version = version
 		if rt.doForgeModuleIntegrityCheck(fm) {
+			// never keep a module that failed the integrity check in the cache
+			rt.purgeDir(filepath.Join(rt.Config.ForgeCacheDir, fileName), "downloadForgeModule()")
+			rt.purgeDir(strings.ReplaceAll(filepath.Join(rt.Config.ForgeCacheDir, fileName), ".tar.gz", "/"), "downloadForgeModule()")
 			if retryCount == 0 {
 				rt.Fatalf("downloadForgeModule(): giving up for Puppet module " + name + " version: " + version)
 			}
 			rt.Warnf("Retrying...")
-			rt.purgeDir(filepath.Join(rt.Config.ForgeCacheDir, fileName), "downloadForgeModule()")
-			rt.purgeDir(strings.ReplaceAll(filepath.Join(rt.Config.ForgeCacheDir, fileName), ".tar.gz", "/"), "downloadForgeModule()")
 			// retry if hash sum mismatch found
 			rt.downloadForgeModule(name, version, fm, retryCount-1)
 		}
