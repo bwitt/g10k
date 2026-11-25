@@ -35,7 +35,6 @@ build:
 	-o g10k ./cmd/g10k
 
 g10k: $(DEPS)
-# -race flag is currently removed because of issues in OS X Monterey. Should be solved above go version 1.17.6
 ifeq ($(UNAME), Darwin)
 	CGO_ENABLED=1 GOOS=darwin go build \
 		-ldflags "-s -w -X main.buildversion=${BUILDVERSION} -X main.buildtime=${BUILDTIME}" \
@@ -44,7 +43,7 @@ ifeq ($(UNAME), Darwin)
 endif
 ifeq ($(UNAME), Linux)
 	CGO_ENABLED=1 GOOS=linux go build \
-		-race -ldflags "-s -w -X main.buildversion=${BUILDVERSION} -X main.buildtime=${BUILDTIME}" \
+		-ldflags "-s -w -X main.buildversion=${BUILDVERSION} -X main.buildtime=${BUILDTIME}" \
 	-o $@ ./cmd/g10k
 	strip $@
 endif
