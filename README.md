@@ -563,6 +563,8 @@ Starting with [v.0.9.0](https://github.com/voxpupuli/g10k/releases/tag/v0.9.0) g
 
 Please check if you need to allowlist files/folders inside your Puppet environments!
 
+Like r10k, without the `environment` purge level only the files that were removed from the control repository are deleted from an environment, other unmanaged content is kept. With the `environment` purge level everything except the module directory and the `purge_allowlist` entries is purged when the control repository changes.
+
 As an additional setting, you can also allowlist Puppet environments with `deployment_purge_allowlist`, that would've been purged by the [deployment](https://github.com/puppetlabs/r10k/blob/master/doc/dynamic-environments/configuration.mkd#deployment) `purge_level`.
 This can be helpful if you have a similar source name or prefix set. E.g. having a source called `foobar` and another one `foobar_hiera` would have purged all foobar*hiera*\* branches if there are not branches called `hiera_master` or similar in the `foobar` source.
 

@@ -249,6 +249,8 @@ func (rt *Runtime) syncToModuleDir(gitModule GitModule, srcDir string, targetDir
 		// else simply delete the whole dir and check it out again
 		if purgeWholeEnvDir {
 			rt.purgeDir(targetDir, "need to sync")
+		} else if !stringSliceContains(rt.Config.PurgeLevels, "environment") && rt.purgeDeletedControlRepoContent(srcDir, targetDir, gitModule.tree) {
+			rt.Debugf("Detected control repo change, keeping unmanaged content in " + targetDir + ", because purge_levels does not contain environment")
 		} else {
 			rt.Infof("Detected control repo change, but trying to preserve module dir " + filepath.Join(targetDir, moduleDir))
 			rt.purgeControlRepoExceptModuledir(targetDir, moduleDir)
@@ -343,4 +345,36 @@ func (rt *Runtime) detectGitRemoteURLChange(d string, url string) bool {
 	}
 	configuredRemote := f[1]
 	return configuredRemote != url
+}
+
+// purgeDeletedControlRepoContent removes the files that were deleted from the control repo since the deployed commit,
+// like r10k does when purge_levels does not contain environment. It returns false if the deployed commit is unknown.
+func (rt *Runtime) purgeDeletedControlRepoContent(gitDir string, envDir string, tree string) bool {
+	deployFile := filepath.Join(envDir, ".g10k-deploy.json")
+	if !fileExists(deployFile) {
+		return false
+	}
+	dr := rt.readDeployResultFile(deployFile)
+	if len(dr.Signature) == 0 {
+		return false
+	}
+	er := rt.executeCommand("git --git-dir "+gitDir+" diff --name-only --no-renames --diff-filter=DT -z "+dr.Signature+" "+tree, "", rt.Config.Timeout, true, false)
+	if er.returnCode != 0 {
+		rt.Debugf("Could not detect deleted control repo content between " + dr.Signature + " and " + tree + ": " + er.output)
+		return false
+	}
+	for _, file := range strings.Split(er.output, "\x00") {
+		if len(file) == 0 {
+			continue
+		}
+		path := filepath.Join(envDir, filepath.FromSlash(file))
+		rt.purgeDir(path, "purgeDeletedControlRepoContent")
+		// remove directories that became empty, like git does
+		for dir := filepath.Dir(path); dir != envDir && strings.HasPrefix(dir, envDir); dir = filepath.Dir(dir) {
+			if os.Remove(dir) != nil {
+				break
+			}
+		}
+	}
+	return true
 }
