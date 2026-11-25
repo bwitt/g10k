@@ -220,6 +220,9 @@ func (rt *Runtime) syncToModuleDir(gitModule GitModule, srcDir string, targetDir
 		}
 		rt.NeedSyncGitCount++
 		rt.Mutex.Unlock()
+		if rt.DryRun {
+			return true
+		}
 		moduleDir := "modules"
 		purgeWholeEnvDir := true
 		// check if it is a control repo and already exists
