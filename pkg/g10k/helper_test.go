@@ -3,11 +3,14 @@ package g10k
 import (
 	"os"
 	"reflect"
+	"syscall"
 	"testing"
 	"time"
 )
 
 func TestMain(m *testing.M) {
+	// the snapshots in tests/snapshots record file modes created with this umask
+	syscall.Umask(0o022)
 	_ = os.Setenv("GIT_CONFIG_COUNT", "2")
 	_ = os.Setenv("GIT_CONFIG_KEY_0", "maintenance.auto")
 	_ = os.Setenv("GIT_CONFIG_VALUE_0", "false")
