@@ -170,7 +170,7 @@ func (rt *Runtime) syncToModuleDir(gitModule GitModule, srcDir string, targetDir
 	}
 	revParseCmd := "git --git-dir " + srcDir + " rev-parse --verify '" + gitModule.tree
 	if !rt.Config.GitObjectSyntaxNotSupported {
-		revParseCmd = revParseCmd + "^{object}'"
+		revParseCmd = revParseCmd + "^{commit}'"
 	} else {
 		revParseCmd = revParseCmd + "'"
 	}

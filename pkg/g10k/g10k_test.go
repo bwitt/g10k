@@ -1090,7 +1090,7 @@ func TestResolvePuppetfileFallback(t *testing.T) {
 		t.Errorf("terminated with the correct exit code, but the expected output was missing. out: %s", string(out))
 	}
 
-	if !strings.Contains(string(out), "executeCommand(): Executing git --git-dir /tmp/g10k/modules/https-__github.com_puppetlabs_puppetlabs-apt.git rev-parse --verify 'foooooobbaar^{object}'") {
+	if !strings.Contains(string(out), "executeCommand(): Executing git --git-dir /tmp/g10k/modules/https-__github.com_puppetlabs_puppetlabs-apt.git rev-parse --verify 'foooooobbaar^{commit}'") {
 		t.Errorf("terminated with the correct exit code, but the expected output was missing. out: %s", string(out))
 	}
 
@@ -1140,7 +1140,7 @@ func TestResolvePuppetfileDefaultBranch(t *testing.T) {
 		t.Errorf("terminated with the correct exit code, but the expected output was missing. out: %s", string(out))
 	}
 
-	if !strings.Contains(string(out), "Executing git --git-dir /tmp/g10k/modules/https-__github.com_puppetlabs_puppetlabs-apache.git rev-parse --verify 'main^{object}' took") {
+	if !strings.Contains(string(out), "Executing git --git-dir /tmp/g10k/modules/https-__github.com_puppetlabs_puppetlabs-apache.git rev-parse --verify 'main^{commit}' took") {
 		t.Errorf("terminated with the correct exit code, but the expected output was missing. out: %s", string(out))
 	}
 
@@ -1186,7 +1186,7 @@ func TestResolvePuppetfileControlBranch(t *testing.T) {
 		t.Errorf("terminated with the correct exit code, but the expected output was missing. out: %s", string(out))
 	}
 
-	if !strings.Contains(string(out), "Executing git --git-dir /tmp/g10k/modules/https-__github.com_xorpaul_g10k_testmodule.git rev-parse --verify 'control_branch_foobar^{object}' took") {
+	if !strings.Contains(string(out), "Executing git --git-dir /tmp/g10k/modules/https-__github.com_xorpaul_g10k_testmodule.git rev-parse --verify 'control_branch_foobar^{commit}' took") {
 		t.Errorf("terminated with the correct exit code, but the expected output was missing. out: %s", string(out))
 	}
 
@@ -1237,7 +1237,7 @@ func TestResolvePuppetfileControlBranchDefault(t *testing.T) {
 		t.Errorf("terminated with the correct exit code, but the expected output was missing. out: %s", string(out))
 	}
 
-	if !strings.Contains(string(out), "Executing git --git-dir /tmp/g10k/modules/https-__github.com_puppetlabs_puppetlabs-apache.git rev-parse --verify 'main^{object}' took") {
+	if !strings.Contains(string(out), "Executing git --git-dir /tmp/g10k/modules/https-__github.com_puppetlabs_puppetlabs-apache.git rev-parse --verify 'main^{commit}' took") {
 		t.Errorf("terminated with the correct exit code, but the expected output was missing. out: %s", string(out))
 	}
 

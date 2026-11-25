@@ -44,7 +44,7 @@ func main() {
 	flag.BoolVar(&opts.Quiet, "quiet", false, "no output, defaults to false")
 	flag.BoolVar(&opts.UseCacheFallback, "usecachefallback", false, "if g10k should try to use its cache for sources and modules instead of failing")
 	flag.BoolVar(&opts.RetryGitCommands, "retrygitcommands", false, "if g10k should purge the local repository and retry a failed git command...")
-	flag.BoolVar(&opts.GitObjectSyntaxNotSupported, "gitobjectsyntaxnotsupported", false, "if your git version is too old to support reference syntax like master^{object}...")
+	flag.BoolVar(&opts.GitObjectSyntaxNotSupported, "gitobjectsyntaxnotsupported", false, "if your git version is too old to support reference syntax like master^{commit}...")
 	flag.Parse()
 
 	opts.ConfigFile = *configFileFlag
