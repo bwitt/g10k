@@ -298,6 +298,9 @@ func Run(opts Options) (int, error) {
 		if err != nil {
 			return 1, err
 		}
+		if rt.Validate {
+			return 0, nil
+		}
 		rt.Config = cfg
 		rt.checkDirAndCreate(rt.Config.CacheDir, "cachedir configured value")
 		target := opts.ConfigFile
@@ -345,6 +348,9 @@ func Run(opts Options) (int, error) {
 		puppetfile, err := rt.readPuppetfile(target, "", "cmdlineparam", "cmdlineparam", false)
 		if err != nil {
 			return 1, err
+		}
+		if rt.Validate {
+			return 0, nil
 		}
 		puppetfile.workDir = ""
 		pfm := make(map[string]Puppetfile)

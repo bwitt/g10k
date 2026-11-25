@@ -140,6 +140,9 @@ func (rt *Runtime) readConfigfile(configFile string) (ConfigSettings, error) {
 	}
 
 	if rt.Validate {
+		for source, sa := range config.Sources {
+			rt.sourceSanityCheck(source, sa)
+		}
 		if err := rt.Validatef(); err != nil {
 			return ConfigSettings{}, err
 		}
