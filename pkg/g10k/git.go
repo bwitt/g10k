@@ -298,18 +298,25 @@ func (rt *Runtime) syncToModuleDir(gitModule GitModule, srcDir string, targetDir
 				}
 				rt.writeStructJSONFile(deployFile, dr)
 			} else {
-				rt.Debugf("Writing hash " + commitHash + " from command " + revParseCmd + " to " + hashFile)
-				f, _ := os.Create(hashFile)
-				defer func() { _ = f.Close() }()
-				_, _ = f.WriteString(commitHash) // FIXME: error should be handled
-				_ = f.Sync()                     // FIXME: error should be handled
+				rt.writeLatestCommit(hashFile, commitHash)
 			}
 
 		} else if rt.Config.CloneGitModules {
-			return rt.doMirrorOrUpdate(gitModule, targetDir, 0)
+			if !rt.doMirrorOrUpdate(gitModule, targetDir, 0) {
+				return false
+			}
+			rt.writeLatestCommit(hashFile, strings.TrimSuffix(er.output, "\n"))
 		}
 	}
 	return true
+}
+
+// writeLatestCommit records the deployed commit of a git module, so unchanged modules are skipped on the next run
+func (rt *Runtime) writeLatestCommit(hashFile string, commitHash string) {
+	rt.Debugf("Writing hash " + commitHash + " to " + hashFile)
+	if err := os.WriteFile(hashFile, []byte(commitHash), 0644); err != nil {
+		rt.Warnf("WARN: could not write " + hashFile + " Error: " + err.Error())
+	}
 }
 
 func (rt *Runtime) detectDefaultBranch(gitDir string) string {
