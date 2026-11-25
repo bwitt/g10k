@@ -299,6 +299,10 @@ func Run(opts Options) (int, error) {
 			return 1, err
 		}
 		rt.Config = cfg
+		// like r10k, refuse to deploy while deploy.write_lock is set
+		if len(rt.Config.WriteLock) > 0 && !rt.DryRun && !rt.Validate {
+			return 16, fmt.Errorf("making changes to deployed environments has been administratively disabled, reason: %s", rt.Config.WriteLock)
+		}
 		rt.checkDirAndCreate(rt.Config.CacheDir, "cachedir configured value")
 		target := opts.ConfigFile
 		if opts.Branch != "" {

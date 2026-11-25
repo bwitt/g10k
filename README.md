@@ -137,6 +137,7 @@ Then run g10k with: `./g10k -config g10k.yaml`
 - **deploy**: Advanced deployment settings including purge levels and allowlists
   - **purge_levels**: Array controlling what to purge (e.g., `['deployment', 'puppetfile']`)
   - **purge_allowlist**: Files/directories to preserve during purge operations
+  - **write_lock**: If set, refuse to deploy and exit with code 16, printing the value as the reason (like r10k). `-dryrun` and `-validate` still work
 
 ### Per-Source Options
 
