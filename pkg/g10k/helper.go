@@ -200,16 +200,12 @@ func (rt *Runtime) executeCommand(command string, commandDir string, timeout int
 	if len(commandDir) > 0 {
 		execCommand.Dir = commandDir
 	}
+	execCommand.Env = os.Environ()
 	if disableHttpProxy {
 		rt.Debugf("found matching NO_PROXY URL, trying to disable http_proxy and https_proxy env variables for " + command)
-		// execCommand.Env = append(os.Environ(), "http_proxy=")
-		// execCommand.Env = append(os.Environ(), "https_proxy=")
-		_ = os.Unsetenv("http_proxy")  // FIXME: error should be handled
-		_ = os.Unsetenv("https_proxy") // FIXME: error should be handled
-		_ = os.Unsetenv("HTTP_PROXY")  // FIXME: error should be handled
-		_ = os.Unsetenv("HTTPS_PROXY") // FIXME: error should be handled
+		// only for this command, other commands still need the proxy
+		execCommand.Env = withoutHTTPProxy(execCommand.Env)
 	}
-	execCommand.Env = os.Environ()
 	out, err := execCommand.CombinedOutput()
 	duration := time.Since(before).Seconds()
 	er := ExecResult{0, string(out)}
@@ -226,6 +222,20 @@ func (rt *Runtime) executeCommand(command string, commandDir string, timeout int
 		er.output = fmt.Sprint(err) + " " + fmt.Sprint(string(out))
 	}
 	return er
+}
+
+// withoutHTTPProxy returns env without the http_proxy and https_proxy variables
+func withoutHTTPProxy(env []string) []string {
+	filtered := make([]string, 0, len(env))
+	for _, e := range env {
+		name, _, _ := strings.Cut(e, "=")
+		switch name {
+		case "http_proxy", "https_proxy", "HTTP_PROXY", "HTTPS_PROXY":
+			continue
+		}
+		filtered = append(filtered, e)
+	}
+	return filtered
 }
 
 func splitCommandLine(input string) ([]string, error) {
